@@ -1,14 +1,8 @@
 import "./App.scss";
-import Navbar from "./components/Navbar/Navbar";
-import SignIn from "./pages/Auth/SignIn";
+import MainLayout from "./components/MainLayout";
 
 function App() {
-  return (
-    <div className="app">
-      <Navbar />
-      <SignIn />
-    </div>
-  );
+  return <MainLayout />;
 }
 
 export default App;
