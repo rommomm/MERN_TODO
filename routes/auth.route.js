@@ -6,7 +6,7 @@ const { check, validationResult } = require("express-validator");
 router.post(
   "/signup",
   [
-    check("username", "Incorrect username").isString(),
+    check("username", "Incorrect username").isString().isLength({ min: 4 }),
     check("email", "Incorrect email").isEmail(),
     check("password", "Incorrect password").isLength({ min: 6 }),
   ],
