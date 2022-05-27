@@ -17,7 +17,7 @@ function SignUp() {
 
   const SignUpHandler = async () => {
     try {
-      await axios.post(
+      const data = await axios.post(
         "/api/auth/signup",
         { ...form },
         {
@@ -27,14 +27,15 @@ function SignUp() {
           },
         }
       );
+      console.log("data", data.message);
     } catch (error) {
-      console.log("error", error);
+      console.log(error.response.data.message);
     }
   };
   return (
     <div className="container">
       <div className="sign-up">
-        <h3>Sign in</h3>
+        <h3>Sign up</h3>
         <form className="form form-login" onSubmit={(e) => e.preventDefault()}>
           <div className="row">
             <div className="input-field col s12">
