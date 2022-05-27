@@ -15,7 +15,6 @@ function SignIn() {
 
   const changeHandler = (event) => {
     setForm({ ...form, [event.target.name]: event.target.value });
-    console.log("form", form);
   };
 
   const SignInHandler = async () => {

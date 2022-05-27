@@ -1,13 +1,28 @@
 .todos {
   margin-top: 50px;
   overflow-y: auto;
-  height: 300px;
   &-item {
     padding: 10px 15px;
     display: flex;
     align-items: center;
     cursor: pointer;
-    border-left: 2px solid purple
+    border-left: 2px solid purple;
+    position: relative;
+    &.completed {
+      &::after {
+        position: absolute;
+        content: '';
+        left: 25px;
+        width: 800px;
+        top: 50%;
+        height: 2px;
+        background: purple;
+      }
+    }
+    &.important {
+      font-weight: 500;
+      color: orange;
+    }
   }
   &-buttons {
       margin-left: auto;

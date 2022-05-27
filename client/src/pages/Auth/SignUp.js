@@ -13,7 +13,6 @@ function SignUp() {
 
   const changeHandler = (event) => {
     setForm({ ...form, [event.target.name]: event.target.value });
-    console.log("form", form);
   };
 
   const SignUpHandler = async () => {

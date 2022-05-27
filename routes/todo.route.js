@@ -21,4 +21,49 @@ router.post("/add", async (req, res) => {
   }
 });
 
+router.get("/", async (req, res) => {
+  try {
+    const { userId } = req.query;
+
+    const todo = await Todo.find({ owner: userId });
+
+    res.json(todo);
+  } catch (error) {
+    console.log("error", error);
+  }
+});
+
+router.delete("/delete/:id", async (req, res) => {
+  try {
+    const todo = await Todo.findOneAndDelete({ _id: req.params.id });
+    res.json(todo);
+  } catch (error) {
+    console.log("error", error);
+  }
+});
+
+router.put("/completed/:id", async (req, res) => {
+  try {
+    const todo = await Todo.findOne({ _id: req.params.id });
+    todo.completed = !todo.completed;
+
+    await todo.save();
+    res.json(todo);
+  } catch (error) {
+    console.log("error", error);
+  }
+});
+
+router.put("/important/:id", async (req, res) => {
+  try {
+    const todo = await Todo.findOne({ _id: req.params.id });
+    todo.important = !todo.important;
+
+    await todo.save();
+    res.json(todo);
+  } catch (error) {
+    console.log("error", error);
+  }
+});
+
 module.exports = router;

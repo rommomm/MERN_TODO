@@ -1,17 +1,32 @@
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import AddTodoForm from "../../components/Todo/AddTodoForm";
+import Todo from "../../components/Todo/Todo";
 import { AuthContext } from "../../context/AuthContext";
 
-import "./MainPage.scss";
-
 function MainPage() {
-  const navigate = useNavigate();
-  const [loaded, setLoaded] = useState(true);
   const [text, setText] = useState("");
   const { isLogin, userId } = useContext(AuthContext);
+  const [todos, setTodos] = useState([]);
+
+  const getTodo = async () => {
+    try {
+      await axios
+        .get("/api/todo", {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          params: { userId },
+        })
+        .then((response) => setTodos(response.data));
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
 
   const createTodo = async () => {
+    if (!text) return null;
     try {
       await axios
         .post(
@@ -24,62 +39,109 @@ function MainPage() {
             },
           }
         )
-        .then((response) => console.log("response", response));
+        .then((response) => {
+          setTodos([...todos], response.data);
+          setText("");
+          getTodo();
+        });
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+  const removeTodo = async (id) => {
+    try {
+      await axios.delete(
+        `/api/todo/delete/${id}`,
+        { id },
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      getTodo();
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+  const completedTodo = async (id) => {
+    try {
+      await axios
+        .put(
+          `/api/todo/completed/${id}`,
+          { id },
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((response) => {
+          setTodos([...todos], response.data);
+          getTodo();
+        });
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+  const importantTodo = async (id) => {
+    try {
+      await axios
+        .put(
+          `/api/todo/important/${id}`,
+          { id },
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((response) => {
+          setTodos([...todos], response.data);
+          getTodo();
+        });
     } catch (error) {
       console.log("error", error);
     }
   };
 
   useEffect(() => {
-    if (!isLogin) {
-      return navigate("/signin");
-    }
-    setLoaded(false);
-  }, [isLogin]);
-  if (!loaded)
-    return (
-      <div className="container">
-        <div className="main-page">
-          <h3>MY TODO</h3>
-          <form
-            className="form form-login"
-            onSubmit={(e) => e.preventDefault()}
-          >
-            <div className="row">
-              <div className="input-field col s12">
-                <input
-                  type="text"
-                  name="input"
-                  placeholder="TODO"
-                  className="validate"
-                  onChange={(e) => setText(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="row">
-              <button
-                onClick={createTodo}
-                className="wawes-effect wawes-light btn purple"
-              >
-                Add todo
-              </button>
-            </div>
-          </form>
-          <h3>Активные задачи</h3>
-          <div className="todos">
-            <div className="row flex todos-item">
-              <div className="col todos-num">1</div>
-              <div className="col todos-text">Text</div>
-              <div className="col todos-buttons">
-                <i class="material-icons blue-text">check</i>
-                <i class="material-icons orange-text ">warning</i>
-                <i class="material-icons red-text">delete</i>
-              </div>
-            </div>
+    getTodo();
+  }, []);
+
+  if (!todos) {
+    return null;
+  }
+  return (
+    <div className="container">
+      <div className="main-page">
+        {isLogin ? (
+          <div>
+            <h3>MY TODO</h3>
+            <AddTodoForm
+              createTodo={createTodo}
+              setText={setText}
+              text={text}
+            />
+            <Todo
+              todos={todos}
+              completedTodo={completedTodo}
+              importantTodo={importantTodo}
+              removeTodo={removeTodo}
+            />
           </div>
-        </div>
+        ) : (
+          <h3>Log in to create a todo</h3>
+        )}
       </div>
-    );
+    </div>
+  );
 }
 
 export default MainPage;
