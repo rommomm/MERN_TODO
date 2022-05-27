@@ -113,7 +113,7 @@ function MainPage() {
 
   useEffect(() => {
     getTodo();
-  }, []);
+  }, [todos]);
 
   if (!todos) {
     return null;
