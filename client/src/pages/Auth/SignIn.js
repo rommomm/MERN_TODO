@@ -1,13 +1,17 @@
 import axios from "axios";
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import "./SignIn.scss";
+import { AuthContext } from "../../context/AuthContext";
 
 function SignIn() {
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
+  const navigate = useNavigate();
+
+  const { authMe, isLogin } = useContext(AuthContext);
 
   const changeHandler = (event) => {
     setForm({ ...form, [event.target.name]: event.target.value });
@@ -16,19 +20,26 @@ function SignIn() {
 
   const SignInHandler = async () => {
     try {
-      await axios.post(
-        "/api/auth/signin",
-        { ...form },
-        {
-          headers: {
-            "Content-Type": "aplication/json",
-          },
-        }
-      );
+      const response = await axios
+        .post(
+          "/api/auth/signin",
+          { ...form },
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((response) => {
+          authMe(response.data.token, response.data.userId);
+        })
+        .then(() => navigate("/"));
     } catch (error) {
       console.log("error", error);
     }
   };
+
   return (
     <div className="container">
       <div className="sign-in">

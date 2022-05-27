@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./SignUp.scss";
 
 function SignUp() {
@@ -9,6 +9,7 @@ function SignUp() {
     email: "",
     password: "",
   });
+  const navigate = useNavigate();
 
   const changeHandler = (event) => {
     setForm({ ...form, [event.target.name]: event.target.value });
@@ -17,17 +18,18 @@ function SignUp() {
 
   const SignUpHandler = async () => {
     try {
-      const data = await axios.post(
-        "/api/auth/signup",
-        { ...form },
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log("data", data.message);
+      const data = await axios
+        .post(
+          "/api/auth/signup",
+          { ...form },
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then(() => navigate("/signin"));
     } catch (error) {
       console.log(error.response.data.message);
     }
